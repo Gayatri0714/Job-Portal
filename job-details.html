@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout :: head(${job.title})"></head>
+<body>
+    <div th:replace="layout :: navbar"></div>
+
+    <div class="container">
+        
+        <div class="ag-card" style="margin-bottom: 40px; border-color: var(--neon-cyan);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1 th:text="${job.title}" class="text-cyan" style="margin-bottom: 10px; font-size: 2.5rem;"></h1>
+                    <h3 class="text-muted" style="margin-bottom: 20px;">
+                        <span th:text="${job.employer.name}"></span> • <span th:text="${job.location}"></span>
+                    </h3>
+                </div>
+                
+                <div style="text-align: right;">
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #fff;">
+                        <span th:text="${job.salary != null and !job.salary.isEmpty() ? '₹ ' + job.salary : 'Negotiable'}"></span>
+                    </div>
+                    <div sec:authorize="hasRole('STUDENT')">
+                        <form th:action="@{/student/apply/{id}(id=${job.id})}" method="post">
+                            <button type="submit" class="ag-btn" style="padding: 12px 30px; font-size: 1.1rem;">Apply Now</button>
+                        </form>
+                    </div>
+                    <div sec:authorize="!hasRole('STUDENT') and !hasRole('EMPLOYER') and !hasRole('ADMIN')">
+                        <a th:href="@{/login}" class="ag-btn" style="padding: 12px 30px; font-size: 1.1rem;">Login to Apply</a>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border-color: #333; margin: 30px 0;">
+
+            <div style="margin-bottom: 30px;">
+                <h3 class="text-purple" style="margin-bottom: 15px;">Required Skills</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span th:each="skill : ${#strings.arraySplit(job.requiredSkills, ',')}" class="ag-btn ag-btn-outline" style="padding: 5px 15px; pointer-events: none;" th:text="${skill}"></span>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-purple" style="margin-bottom: 15px;">Job Description</h3>
+                <p style="line-height: 1.8; color: #ccc; white-space: pre-wrap;" th:text="${job.description}"></p>
+            </div>
+        </div>
+
+        <!-- More Available Jobs Section -->
+        <h2 class="text-cyan" style="margin-bottom: 20px; text-align: center;">More Available Jobs</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            <div th:each="moreJob : ${moreJobs}" class="ag-card" style="border-color: #333;">
+                <h3 th:text="${moreJob.title}" class="text-cyan" style="margin-bottom: 5px;"></h3>
+                <div class="text-muted" style="margin-bottom: 10px;">
+                    <span th:text="${moreJob.employer.name}"></span> • <span th:text="${moreJob.location}"></span>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>Salary:</strong> <span th:text="${moreJob.salary != null and !moreJob.salary.isEmpty() ? '₹ ' + moreJob.salary : 'Negotiable'}"></span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a th:href="@{/jobs/{id}(id=${moreJob.id})}" class="ag-btn ag-btn-outline" style="flex: 1; text-align: center; box-sizing: border-box;">View Details</a>
+                    
+                    <div sec:authorize="hasRole('STUDENT')" style="flex: 1;">
+                        <form th:action="@{/student/apply/{id}(id=${moreJob.id})}" method="post" style="margin: 0;">
+                            <button type="submit" class="ag-btn" style="width: 100%;">Apply Now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${moreJobs.empty}" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">
+                <p>No other jobs available right now.</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('OTP Verification')"></head>
+<body>
+    <div th:replace="layout :: navbar"></div>
+
+    <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+        <div class="ag-card" style="width: 400px; text-align: center;">
+            <h2 class="text-cyan" style="margin-bottom: 20px;">Verify Your Account</h2>
+            
+            <p class="text-muted" style="margin-bottom: 20px;">We've sent a 6-digit verification code to your email address. Please enter it below.</p>
+            
+            <div th:if="${error}" style="color: #ff453a; margin-bottom: 15px;" th:text="${error}"></div>
+
+            <form th:action="@{/otp-verification}" method="post">
+                <input type="text" name="otp" class="ag-input" placeholder="Enter 6-digit OTP" required maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px;">
+                <button type="submit" class="ag-btn" style="width: 100%; margin-top: 15px;">Verify & Register</button>
+            </form>
+            
+            <div style="margin-top: 20px;">
+                <a th:href="@{/register}" class="text-cyan" style="text-decoration: none; font-size: 0.9rem;">Start Over</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
